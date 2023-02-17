@@ -29,12 +29,18 @@ func Test_BasicUsage(t *testing.T) {
 		Warning("My warning")
 		Info("My info")
 
+		// IsVerbose() is used to avoid unnecessary calculations
+		if IsVerbose() {
+			Verbose("!!! You should NOT see this verbose message since default level is INFO")
+		}
+
 		// IsDebug() is used to avoid unnecessary calculations
 		if IsDebug() {
-			Debug("!!! You should NOT see it since default level is INFO")
+			Debug("!!! You should NOT see this debug message since default level is INFO")
 		}
 	}
-	// Changing LogLevelgolan
+
+	// Changing LogLevel
 	{
 		SetLogLevel(LogLevelDebug)
 		if IsDebug() {
@@ -47,6 +53,7 @@ func Test_BasicUsage(t *testing.T) {
 		Warning("You should see my warning")
 		Warning("You should see my info")
 	}
+
 	// Let see how it looks when using from methods
 	{
 		m := mystruct{}
@@ -71,33 +78,47 @@ func Test_MsgFormatter(t *testing.T) {
 }
 
 func Test_CheckSetLevels(t *testing.T) {
-	// 1. Info LogLevel = LogLevelInfo
-	SetLogLevel(LogLevelInfo)
-	assert.False(t, IsDebug())
-	assert.True(t, IsEnabled(LogLevelInfo))
-	assert.True(t, IsEnabled(LogLevelWarning))
-	assert.True(t, IsEnabled(LogLevelError))
 
-	// 2. Debug LogLevel = LogLevelDebug
-	SetLogLevel(LogLevelDebug)
-	assert.True(t, IsDebug())
-	assert.True(t, IsEnabled(LogLevelInfo))
-	assert.True(t, IsEnabled(LogLevelWarning))
-	assert.True(t, IsEnabled(LogLevelError))
+	require := require.New(t)
 
-	// 3. Warning LogLevel = LogLevelWarning
-	SetLogLevel(LogLevelWarning)
-	assert.False(t, IsDebug())
-	assert.False(t, IsEnabled(LogLevelInfo))
-	assert.True(t, IsEnabled(LogLevelWarning))
-	assert.True(t, IsEnabled(LogLevelError))
+	// LogLevelError
 
-	// 4. Error LogLevel = LogLevelError
 	SetLogLevel(LogLevelError)
-	assert.False(t, IsDebug())
-	assert.False(t, IsEnabled(LogLevelInfo))
-	assert.False(t, IsEnabled(LogLevelWarning))
-	assert.True(t, IsEnabled(LogLevelError))
+	require.False(IsDebug())
+	require.False(IsEnabled(LogLevelInfo))
+	require.False(IsEnabled(LogLevelWarning))
+	require.True(IsEnabled(LogLevelError))
+
+	// LogLevelInfo
+	SetLogLevel(LogLevelInfo)
+	require.False(IsDebug())
+	require.False(IsVerbose())
+	require.True(IsEnabled(LogLevelInfo))
+	require.True(IsEnabled(LogLevelWarning))
+	require.True(IsEnabled(LogLevelError))
+
+	// LogLevelDebug
+	SetLogLevel(LogLevelDebug)
+	require.True(IsDebug())
+	require.True(IsVerbose())
+	require.True(IsEnabled(LogLevelInfo))
+	require.True(IsEnabled(LogLevelWarning))
+	require.True(IsEnabled(LogLevelError))
+
+	// LogLevelWarning
+	SetLogLevel(LogLevelWarning)
+	require.False(IsDebug())
+	require.False(IsEnabled(LogLevelInfo))
+	require.True(IsEnabled(LogLevelWarning))
+	require.True(IsEnabled(LogLevelError))
+
+	// LogLevelWarning
+	SetLogLevel(LogLevelVerbose)
+	require.False(IsDebug())
+	require.False(IsEnabled(LogLevelInfo))
+	require.True(IsEnabled(LogLevelWarning))
+	require.True(IsEnabled(LogLevelError))
+
 }
 
 func Test_CheckRightPrefix(t *testing.T) {

@@ -11,51 +11,23 @@ import (
 	"fmt"
 	"runtime"
 	"strings"
-	"sync/atomic"
 	"time"
 )
-
-// TLogLevel s.e.
-type TLogLevel int32
 
 const (
 	skipStackFramesCount = 4
 	normalLineLength     = 60
 )
 
-// Log Levels enum
-const (
-	LogLevelNone = TLogLevel(iota)
-	LogLevelError
-	LogLevelWarning
-	LogLevelInfo
-	LogLevelDebug
-)
-
 const (
 	errorPrefix   = "*****"
 	warningPrefix = "!!!"
 	infoPrefix    = "==="
-	debugPrefix   = "---"
+	verbosePrefix = "---"
+	debugPrefix   = "..."
 )
 
 var globalLogPrinter = logPrinter{logLevel: LogLevelInfo}
-
-// SetLogLevel s.e.
-func SetLogLevel(logLevel TLogLevel) {
-	atomic.StoreInt32((*int32)(&globalLogPrinter.logLevel), int32(logLevel))
-}
-
-// IsEnabled s.e.
-func IsEnabled(logLevel TLogLevel) bool {
-	curLogLevel := TLogLevel(atomic.LoadInt32((*int32)(&globalLogPrinter.logLevel)))
-	return curLogLevel >= logLevel
-}
-
-// IsDebug s.e.
-func IsDebug() bool {
-	return IsEnabled(LogLevelDebug)
-}
 
 type logPrinter struct {
 	logLevel TLogLevel
@@ -106,6 +78,8 @@ func getLevelPrefix(level TLogLevel) string {
 		return warningPrefix
 	case LogLevelInfo:
 		return infoPrefix
+	case LogLevelVerbose:
+		return verbosePrefix
 	case LogLevelDebug:
 		return debugPrefix
 	}
@@ -116,24 +90,4 @@ func printIfLevel(level TLogLevel, args ...interface{}) {
 	if IsEnabled(level) {
 		globalLogPrinter.print(getLevelPrefix(level), args...)
 	}
-}
-
-// Error s.e.
-func Error(args ...interface{}) {
-	printIfLevel(LogLevelError, args...)
-}
-
-// Warning s.e.
-func Warning(args ...interface{}) {
-	printIfLevel(LogLevelWarning, args...)
-}
-
-// Info s.e.
-func Info(args ...interface{}) {
-	printIfLevel(LogLevelInfo, args...)
-}
-
-// Debug s.e.
-func Debug(args ...interface{}) {
-	printIfLevel(LogLevelDebug, args...)
 }
