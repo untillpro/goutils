@@ -28,22 +28,22 @@ func Test_BasicsUsage(t *testing.T) {
 
 	logger.SetLogLevel(logger.LogLevelVerbose)
 
-	// echo to stdout, stderr writers
+	// echo to strings
+	{
+		stdout, stderr, err := new(PipedExec).
+			Command("echo", "hello853").
+			RunToStrings()
+		require.NoError(err)
+		require.Equal("hello853", stdout[0:8])
+		require.Equal("", stderr)
+	}
+
+	// echo to stdout, stderr
 	{
 		err := new(PipedExec).
 			Command("echo", "hello").
 			Run(os.Stdout, os.Stderr)
 		assert.Nil(t, err)
-	}
-
-	// echo to string
-	{
-		stdout, stderr, err := new(PipedExec).
-			Command("echo", "hello").
-			RunToStrings()
-		require.NoError(err)
-		require.Equal("hello", stdout[0:5])
-		require.Equal("", stderr)
 	}
 
 	// echo hello2 | grep hello2
