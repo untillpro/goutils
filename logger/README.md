@@ -7,7 +7,7 @@ Simple go logger with logging level. Default output will be like this:
 09/29 13:29:04.355: *****: [core-logger.Test_BasicUsage:22]: Hello world arg1 arg2
 09/29 13:29:04.373: !!!: [core-logger.Test_BasicUsage:23]: My warning
 09/29 13:29:04.374: ===: [core-logger.Test_BasicUsage:24]: My info
-09/29 13:29:04.374: ---: [core-logger.Test_BasicUsage:35]: Now you should see my Debug
+09/29 13:29:04.374: ---: [core-logger.Test_BasicUsage:35]: Now you should see my Trace
 09/29 13:29:04.374: !!!: [core-logger.Test_BasicUsage:41]: You should see my warning
 09/29 13:29:04.374: !!!: [core-logger.Test_BasicUsage:42]: You should see my info
 09/29 13:29:04.374: *****: [core-logger.(*mystruct).iWantToLog:55]: OOPS

@@ -37,9 +37,9 @@ func Test_CheckRightPrefix(t *testing.T) {
 	SetLogLevel(LogLevelInfo)
 	assert.Equal(t, getLevelPrefix(globalLogPrinter.logLevel), infoPrefix)
 
-	// 2. Debug LogLevel = LogLevelDebug
-	SetLogLevel(LogLevelDebug)
-	assert.Equal(t, getLevelPrefix(globalLogPrinter.logLevel), debugPrefix)
+	// 2. Trace LogLevel = LogLevelTrace
+	SetLogLevel(LogLevelTrace)
+	assert.Equal(t, getLevelPrefix(globalLogPrinter.logLevel), tracePrefix)
 
 	// 3. Warning LogLevel = LogLevelWarning
 	SetLogLevel(LogLevelWarning)

@@ -26,7 +26,7 @@ const (
 	warningPrefix = "!!!"
 	infoPrefix    = "==="
 	verbosePrefix = "---"
-	debugPrefix   = "..."
+	tracePrefix   = "..."
 )
 
 var globalLogPrinter = logPrinter{logLevel: LogLevelInfo}
@@ -87,8 +87,8 @@ func getLevelPrefix(level TLogLevel) string {
 		return infoPrefix
 	case LogLevelVerbose:
 		return verbosePrefix
-	case LogLevelDebug:
-		return debugPrefix
+	case LogLevelTrace:
+		return tracePrefix
 	}
 	return ""
 }

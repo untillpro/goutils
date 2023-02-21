@@ -34,20 +34,23 @@ func Test_BasicUsage(t *testing.T) {
 			logger.Verbose("!!! You should NOT see this verbose message since default level is INFO")
 		}
 
-		// IsDebug() is used to avoid unnecessary calculations
-		if logger.IsDebug() {
-			logger.Debug("!!! You should NOT see this debug message since default level is INFO")
+		// IsTrace() is used to avoid unnecessary calculations
+		if logger.IsTrace() {
+			logger.Trace("!!! You should NOT see this trace message since default level is INFO")
 		}
 	}
 
 	// Changing LogLevel
 	{
-		logger.SetLogLevel(logger.LogLevelDebug)
-		if logger.IsDebug() {
-			logger.Debug("Now you should see my Debug")
+		logger.SetLogLevel(logger.LogLevelTrace)
+		if logger.IsTrace() {
+			logger.Trace("Now you should see my Trace")
+		}
+		if logger.IsVerbose() {
+			logger.Verbose("Now you should see my Verbose")
 		}
 		logger.SetLogLevel(logger.LogLevelError)
-		logger.Debug("!!! You should NOT see my Debug")
+		logger.Trace("!!! You should NOT see my Trace")
 		logger.Warning("!!! You should NOT see my warning")
 		logger.SetLogLevel(logger.LogLevelInfo)
 		logger.Warning("You should see my warning")
@@ -65,44 +68,47 @@ func Test_CheckSetLevels(t *testing.T) {
 
 	require := require.New(t)
 
-	// LogLevelError
+	logger.SetLogLevel(logger.LogLevelNone)
+	require.False(logger.IsError())
+	require.False(logger.IsWarning())
+	require.False(logger.IsInfo())
+	require.False(logger.IsVerbose())
+	require.False(logger.IsTrace())
 
 	logger.SetLogLevel(logger.LogLevelError)
 	require.True(logger.IsError())
 	require.False(logger.IsWarning())
 	require.False(logger.IsInfo())
 	require.False(logger.IsVerbose())
-	require.False(logger.IsDebug())
+	require.False(logger.IsTrace())
 
-	// LogLevelWarning
 	logger.SetLogLevel(logger.LogLevelWarning)
-	require.False(logger.IsDebug())
+	require.True(logger.IsError())
+	require.True(logger.IsWarning())
 	require.False(logger.IsInfo())
-	require.True(logger.IsWarning())
-	require.True(logger.IsError())
-
-	// LogLevelInfo
-	logger.SetLogLevel(logger.LogLevelInfo)
-	require.False(logger.IsDebug())
 	require.False(logger.IsVerbose())
-	require.True(logger.IsInfo())
-	require.True(logger.IsWarning())
-	require.True(logger.IsError())
+	require.False(logger.IsTrace())
 
-	// LogLevelDebug
-	logger.SetLogLevel(logger.LogLevelDebug)
-	require.True(logger.IsDebug())
-	require.True(logger.IsVerbose())
-	require.True(logger.IsInfo())
-	require.True(logger.IsWarning())
+	logger.SetLogLevel(logger.LogLevelInfo)
 	require.True(logger.IsError())
+	require.True(logger.IsWarning())
+	require.True(logger.IsInfo())
+	require.False(logger.IsVerbose())
+	require.False(logger.IsTrace())
 
-	// LogLevelWarning
 	logger.SetLogLevel(logger.LogLevelVerbose)
-	require.False(logger.IsDebug())
-	require.True(logger.IsInfo())
-	require.True(logger.IsWarning())
 	require.True(logger.IsError())
+	require.True(logger.IsWarning())
+	require.True(logger.IsInfo())
+	require.True(logger.IsVerbose())
+	require.False(logger.IsTrace())
+
+	logger.SetLogLevel(logger.LogLevelTrace)
+	require.True(logger.IsError())
+	require.True(logger.IsWarning())
+	require.True(logger.IsInfo())
+	require.True(logger.IsVerbose())
+	require.True(logger.IsTrace())
 
 }
 

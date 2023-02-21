@@ -19,14 +19,13 @@ const (
 	LogLevelError
 	LogLevelWarning
 	LogLevelInfo
-	LogLevelVerbose
-	LogLevelDebug
+	LogLevelVerbose // aka Debug
+	LogLevelTrace
 )
 
 func SetLogLevel(logLevel TLogLevel) {
 	atomic.StoreInt32((*int32)(&globalLogPrinter.logLevel), int32(logLevel))
 }
-
 
 func Error(args ...interface{}) {
 	printIfLevel(LogLevelError, args...)
@@ -44,8 +43,8 @@ func Verbose(args ...interface{}) {
 	printIfLevel(LogLevelVerbose, args...)
 }
 
-func Debug(args ...interface{}) {
-	printIfLevel(LogLevelDebug, args...)
+func Trace(args ...interface{}) {
+	printIfLevel(LogLevelTrace, args...)
 }
 
 func IsError() bool {
@@ -64,6 +63,6 @@ func IsVerbose() bool {
 	return isEnabled(LogLevelVerbose)
 }
 
-func IsDebug() bool {
-	return isEnabled(LogLevelDebug)
+func IsTrace() bool {
+	return isEnabled(LogLevelTrace)
 }
