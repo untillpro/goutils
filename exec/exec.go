@@ -51,6 +51,7 @@ func (Self *PipedExec) command(name string, stderrRedirection int, args ...strin
 	if lastIdx > -1 {
 		var err error
 		cmd.Stdin, err = Self.cmds[lastIdx].cmd.StdoutPipe()
+		// notest
 		if err != nil {
 			panic(err)
 		}
@@ -135,10 +136,12 @@ func (Self *PipedExec) RunToStrings() (stdout string, stderr string, err error) 
 
 	lastCmd := Self.cmds[len(Self.cmds)-1]
 	stdoutPipe, err := lastCmd.cmd.StdoutPipe()
+	// notest
 	if nil != err {
 		return "", "", err
 	}
 	stderrPipe, err := lastCmd.cmd.StderrPipe()
+	// notest
 	if nil != err {
 		return "", "", err
 	}
@@ -152,6 +155,7 @@ func (Self *PipedExec) RunToStrings() (stdout string, stderr string, err error) 
 		defer wg.Done()
 		buf := new(bytes.Buffer)
 		_, err = buf.ReadFrom(stdoutPipe)
+		// notestdept
 		if nil != err {
 			panic(err)
 		}
@@ -162,6 +166,7 @@ func (Self *PipedExec) RunToStrings() (stdout string, stderr string, err error) 
 		defer wg.Done()
 		buf := new(bytes.Buffer)
 		_, err = buf.ReadFrom(stderrPipe)
+		// notestdept
 		if nil != err {
 			panic(err)
 		}

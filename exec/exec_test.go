@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-package exec
+package exec_test
 
 import (
 	"fmt"
@@ -19,6 +19,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/untillpro/goutils/exec"
 	"github.com/untillpro/goutils/logger"
 )
 
@@ -30,7 +31,7 @@ func Test_BasicsUsage(t *testing.T) {
 
 	// echo to strings
 	{
-		stdout, stderr, err := new(PipedExec).
+		stdout, stderr, err := new(exec.PipedExec).
 			Command("echo", "hello853").
 			RunToStrings()
 		require.NoError(err)
@@ -40,7 +41,7 @@ func Test_BasicsUsage(t *testing.T) {
 
 	// echo to stdout, stderr
 	{
-		err := new(PipedExec).
+		err := new(exec.PipedExec).
 			Command("echo", "hello").
 			Run(os.Stdout, os.Stderr)
 		assert.Nil(t, err)
@@ -48,7 +49,7 @@ func Test_BasicsUsage(t *testing.T) {
 
 	// echo hello2 | grep hello2
 	{
-		err := new(PipedExec).
+		err := new(exec.PipedExec).
 			Command("echo", "hello2").
 			Command("grep", "hello2").
 			Run(os.Stdout, os.Stderr)
@@ -57,7 +58,7 @@ func Test_BasicsUsage(t *testing.T) {
 
 	// echo hi | grep hello
 	{
-		err := new(PipedExec).
+		err := new(exec.PipedExec).
 			Command("echo", "hi").
 			Command("grep", "hello").
 			Run(os.Stdout, os.Stderr)
@@ -66,7 +67,7 @@ func Test_BasicsUsage(t *testing.T) {
 
 	// echo hi | grep hi | echo good
 	{
-		err := new(PipedExec).
+		err := new(exec.PipedExec).
 			Command("echo", "hi").
 			Command("grep", "hi").
 			Command("echo", "good").
@@ -76,7 +77,7 @@ func Test_BasicsUsage(t *testing.T) {
 
 	// ls at "/""
 	{
-		err := new(PipedExec).
+		err := new(exec.PipedExec).
 			Command("ls").WorkingDir("/").
 			Run(os.Stdout, os.Stdout)
 		require.NoError(err)
@@ -109,22 +110,22 @@ func Test_Wd(t *testing.T) {
 
 	// Run ls commands
 
-	err = new(PipedExec).
+	err = new(exec.PipedExec).
 		Command("ls", "1.txt").WorkingDir(tmpDir1).
 		Run(os.Stdout, os.Stdout)
 	assert.Nil(t, err)
 
-	err = new(PipedExec).
+	err = new(exec.PipedExec).
 		Command("ls", "2.txt").WorkingDir(tmpDir2).
 		Run(os.Stdout, os.Stdout)
 	assert.Nil(t, err)
 
-	err = new(PipedExec).
+	err = new(exec.PipedExec).
 		Command("ls", "1.txt").WorkingDir(tmpDir2).
 		Run(os.Stdout, os.Stdout)
 	assert.NotNil(t, err)
 
-	err = new(PipedExec).
+	err = new(exec.PipedExec).
 		Command("ls", "2.txt").WorkingDir(tmpDir1).
 		Run(os.Stdout, os.Stdout)
 	assert.NotNil(t, err)
@@ -135,7 +136,7 @@ func Test_PipeFall(t *testing.T) {
 
 	// echo hi | grep hi | echo good => OK
 	{
-		err := new(PipedExec).
+		err := new(exec.PipedExec).
 			Command("echo", "hi").
 			Command("grep", "hi").
 			Command("echo", "good").
@@ -146,7 +147,7 @@ func Test_PipeFall(t *testing.T) {
 
 	// echo hi | grep hello | echo good => FAIL
 	{
-		err := new(PipedExec).
+		err := new(exec.PipedExec).
 			Command("echo", "hi").
 			Command("grep", "hello").
 			Command("echo", "good").
@@ -157,7 +158,7 @@ func Test_PipeFall(t *testing.T) {
 }
 
 func Test_WrongCommand(t *testing.T) {
-	err := new(PipedExec).
+	err := new(exec.PipedExec).
 		Command("qqqqqqjkljlj", "hello").
 		Run(os.Stdout, os.Stdout)
 	assert.NotNil(t, err)
@@ -165,14 +166,14 @@ func Test_WrongCommand(t *testing.T) {
 }
 
 func Test_EmptyCommandList(t *testing.T) {
-	err := new(PipedExec).
+	err := new(exec.PipedExec).
 		Run(os.Stdout, os.Stdout)
 	assert.NotNil(t, err)
 	log.Println(err)
 }
 
 func Test_KillProcessUsingFirst(t *testing.T) {
-	pe := new(PipedExec)
+	pe := new(exec.PipedExec)
 	pe.Command("sleep", "10")
 	cmd := pe.GetCmd(0)
 
@@ -193,7 +194,7 @@ func Test_RunToStrings(t *testing.T) {
 	logger.SetLogLevel(logger.LogLevelVerbose)
 
 	{
-		stdouts, stderrs, err := new(PipedExec).
+		stdouts, stderrs, err := new(exec.PipedExec).
 			Command("sh", "-c", "echo 11").
 			RunToStrings()
 		assert.Nil(t, err)
@@ -203,7 +204,7 @@ func Test_RunToStrings(t *testing.T) {
 
 	// 1 > &2
 	{
-		stdouts, stderrs, err := new(PipedExec).
+		stdouts, stderrs, err := new(exec.PipedExec).
 			Command("sh", "-c", "echo 11 1>&2").
 			RunToStrings()
 		assert.Nil(t, err)
@@ -213,7 +214,7 @@ func Test_RunToStrings(t *testing.T) {
 
 	//stdout and stderr
 	{
-		stdouts, stderrs, err := new(PipedExec).
+		stdouts, stderrs, err := new(exec.PipedExec).
 			Command("sh", "-c", "echo err 1>&2; echo std").
 			RunToStrings()
 		assert.Nil(t, err)
@@ -223,7 +224,7 @@ func Test_RunToStrings(t *testing.T) {
 
 	//Wrong command
 	{
-		stdouts, stderrs, err := new(PipedExec).
+		stdouts, stderrs, err := new(exec.PipedExec).
 			Command("itmustbeawrongcommandPipedExecRunToStrings").
 			RunToStrings()
 		assert.NotNil(t, err)
