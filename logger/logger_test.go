@@ -19,13 +19,14 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/untillpro/goutils/logger"
+	"github.com/untillpro/goutils/testingu"
 )
 
 func Test_BasicUsage(t *testing.T) {
 
 	// "Hello world"
 	{
-		logger.Error("Hello world", "arg1", "arg2")
+		logger.Error("Error", "arg1", "arg2")
 		logger.Warning("My warning")
 		logger.Info("My info")
 
@@ -62,6 +63,38 @@ func Test_BasicUsage(t *testing.T) {
 		m := mystruct{}
 		m.iWantToLog()
 	}
+}
+
+func Test_StdoutStderr_LogLevel(t *testing.T) {
+
+	require := require.New(t)
+
+	// LogLevelError
+	{
+		logger.SetLogLevel(logger.LogLevelError)
+		strStdout, strStderr, err := testingu.CaptureStdoutStderr(func() error {
+			logger.Error("Error", "arg1", "arg2")
+			logger.Warning("My warning")
+			return nil
+		})
+		require.NoError(err)
+		require.Contains(strStderr, "Error arg1 arg2")
+		require.Equal(strStdout, "")
+	}
+	
+	// LogLevelWarning
+	{
+		logger.SetLogLevel(logger.LogLevelWarning)
+		strStdout, strStderr, err := testingu.CaptureStdoutStderr(func() error {
+			logger.Error("Error", "arg1", "arg2")
+			logger.Warning("My warning")
+			return nil
+		})
+		require.NoError(err)
+		require.Contains(strStderr, "Error arg1 arg2")
+		require.Contains(strStdout, "My warning")
+	}
+
 }
 
 func Test_CheckSetLevels(t *testing.T) {

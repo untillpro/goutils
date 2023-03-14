@@ -179,7 +179,7 @@ func Test_KillProcessUsingFirst(t *testing.T) {
 
 	go func() {
 		defer fmt.Println("Bye")
-		<-time.After(2 * time.Second)
+		<-time.After(300 * time.Millisecond)
 		fmt.Println("Killing process...")
 		_ = cmd.Process.Kill()
 	}()

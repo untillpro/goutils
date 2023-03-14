@@ -10,6 +10,8 @@ package logger
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"runtime"
 	"strings"
 	"sync/atomic"
@@ -71,10 +73,17 @@ func (p *logPrinter) getFormattedMsg(msgType string, funcName string, line int, 
 	return out
 }
 
-func (p *logPrinter) print(msgType string, args ...interface{}) {
+func (p *logPrinter) print(level TLogLevel, msgType string, args ...interface{}) {
 	funcName, line := p.getFuncName(skipStackFramesCount)
 	out := p.getFormattedMsg(msgType, funcName, line, args...)
-	fmt.Println(out)
+
+	var w io.Writer
+	if level == LogLevelError {
+		w = os.Stderr
+	} else {
+		w = os.Stdout
+	}
+	fmt.Fprintln(w, out)
 }
 
 func getLevelPrefix(level TLogLevel) string {
@@ -95,6 +104,6 @@ func getLevelPrefix(level TLogLevel) string {
 
 func printIfLevel(level TLogLevel, args ...interface{}) {
 	if isEnabled(level) {
-		globalLogPrinter.print(getLevelPrefix(level), args...)
+		globalLogPrinter.print(level, getLevelPrefix(level), args...)
 	}
 }
