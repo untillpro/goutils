@@ -24,6 +24,7 @@ type RootTestCase struct {
 }
 
 func RunRootTestCases(t *testing.T, execute func(args []string, version string) error, testCases []RootTestCase) {
+	// notestdept
 	t.Helper()
 	for _, tc := range testCases {
 		t.Run(tc.Name, func(t *testing.T) {
@@ -32,7 +33,7 @@ func RunRootTestCases(t *testing.T, execute func(args []string, version string) 
 				return execute(tc.Args, tc.Version)
 			}
 
-			_, _, err := captureStdoutStderr(f)
+			_, _, err := CaptureStdoutStderr(f)
 
 			checkError(t, tc.ExpectedErr, tc.ExpectedErrPattern, err)
 		})
@@ -40,6 +41,7 @@ func RunRootTestCases(t *testing.T, execute func(args []string, version string) 
 }
 
 func checkError(t *testing.T, expectedErr error, expectedErrPattern string, actualErr error) {
+	// notestdept
 	t.Helper()
 	if expectedErr != nil || len(expectedErrPattern) > 0 {
 		if actualErr == nil {
@@ -61,14 +63,16 @@ func checkError(t *testing.T, expectedErr error, expectedErrPattern string, actu
 
 // https://go.dev/play/p/Fzj1k7jul7z
 
-func captureStdoutStderr(f func() error) (stdout string, stderr string, err error) {
+func CaptureStdoutStderr(f func() error) (stdout string, stderr string, err error) {
 
 	stdoutReader, stdoutWriter, err := os.Pipe()
 	if err != nil {
+		// notestdept
 		return
 	}
 	stderrReader, stderrWriter, err := os.Pipe()
 	if err != nil {
+		// notestdept
 		return
 	}
 
