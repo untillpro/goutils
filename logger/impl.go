@@ -37,7 +37,7 @@ type logPrinter struct {
 	logLevel TLogLevel
 }
 
-func isEnabled(logLevel TLogLevel) bool {
+func IsEnabled(logLevel TLogLevel) bool {
 	curLogLevel := TLogLevel(atomic.LoadInt32((*int32)(&globalLogPrinter.logLevel)))
 	return curLogLevel >= logLevel
 }
@@ -103,7 +103,11 @@ func getLevelPrefix(level TLogLevel) string {
 }
 
 func printIfLevel(level TLogLevel, args ...interface{}) {
-	if isEnabled(level) {
+	if ExtPrintFunc != nil {
+		ExtPrintFunc(level, args...)
+		return
+	}
+	if IsEnabled(level) {
 		globalLogPrinter.print(level, getLevelPrefix(level), args...)
 	}
 }

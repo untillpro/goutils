@@ -10,6 +10,9 @@ package logger
 
 import "sync/atomic"
 
+// external log printing function
+var ExtPrintFunc func(level TLogLevel, args ...interface{})
+
 // TLogLevel s.e.
 type TLogLevel int32
 
@@ -48,21 +51,21 @@ func Trace(args ...interface{}) {
 }
 
 func IsError() bool {
-	return isEnabled(LogLevelError)
+	return IsEnabled(LogLevelError)
 }
 
 func IsInfo() bool {
-	return isEnabled(LogLevelInfo)
+	return IsEnabled(LogLevelInfo)
 }
 
 func IsWarning() bool {
-	return isEnabled(LogLevelWarning)
+	return IsEnabled(LogLevelWarning)
 }
 
 func IsVerbose() bool {
-	return isEnabled(LogLevelVerbose)
+	return IsEnabled(LogLevelVerbose)
 }
 
 func IsTrace() bool {
-	return isEnabled(LogLevelTrace)
+	return IsEnabled(LogLevelTrace)
 }
