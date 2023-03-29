@@ -10,6 +10,7 @@ package logger_test
 
 import (
 	"bytes"
+	"fmt"
 	"io"
 	"os"
 	"strconv"
@@ -63,6 +64,25 @@ func Test_BasicUsage(t *testing.T) {
 		m := mystruct{}
 		m.iWantToLog()
 	}
+
+	// using the external log printing function
+	{
+		logger.ExtPrintFunc = func(level logger.TLogLevel, args ...interface{}) {
+			if logger.IsEnabled(level) {
+				fmt.Println(args...)
+			}
+		}
+		defer func() {
+			logger.ExtPrintFunc = nil
+		}()
+		logger.SetLogLevel(logger.LogLevelTrace)
+		logger.Trace("My Trace")
+		logger.Warning("My warning")
+		logger.Verbose("My Verbose")
+		logger.Error("My error", "arg1", "arg2")
+		logger.Warning("My warning")
+		logger.Info("My info")
+	}
 }
 
 func Test_StdoutStderr_LogLevel(t *testing.T) {
@@ -81,7 +101,7 @@ func Test_StdoutStderr_LogLevel(t *testing.T) {
 		require.Contains(strStderr, "Error arg1 arg2")
 		require.Equal(strStdout, "")
 	}
-	
+
 	// LogLevelWarning
 	{
 		logger.SetLogLevel(logger.LogLevelWarning)

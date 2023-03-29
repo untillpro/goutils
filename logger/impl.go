@@ -103,10 +103,6 @@ func getLevelPrefix(level TLogLevel) string {
 }
 
 func printIfLevel(level TLogLevel, args ...interface{}) {
-	if ExtPrintFunc != nil {
-		ExtPrintFunc(level, args...)
-		return
-	}
 	if IsEnabled(level) {
 		globalLogPrinter.print(level, getLevelPrefix(level), args...)
 	}

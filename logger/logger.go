@@ -26,28 +26,36 @@ const (
 	LogLevelTrace
 )
 
+func print(level TLogLevel, args ...interface{}) {
+	if ExtPrintFunc != nil {
+		ExtPrintFunc(level, args...)
+	} else {
+		printIfLevel(level, args...)
+	}
+}
+
 func SetLogLevel(logLevel TLogLevel) {
 	atomic.StoreInt32((*int32)(&globalLogPrinter.logLevel), int32(logLevel))
 }
 
 func Error(args ...interface{}) {
-	printIfLevel(LogLevelError, args...)
+	print(LogLevelError, args...)
 }
 
 func Warning(args ...interface{}) {
-	printIfLevel(LogLevelWarning, args...)
+	print(LogLevelWarning, args...)
 }
 
 func Info(args ...interface{}) {
-	printIfLevel(LogLevelInfo, args...)
+	print(LogLevelInfo, args...)
 }
 
 func Verbose(args ...interface{}) {
-	printIfLevel(LogLevelVerbose, args...)
+	print(LogLevelVerbose, args...)
 }
 
 func Trace(args ...interface{}) {
-	printIfLevel(LogLevelTrace, args...)
+	print(LogLevelTrace, args...)
 }
 
 func IsError() bool {
