@@ -8,7 +8,12 @@
 
 package logger
 
-import "sync/atomic"
+import (
+	"fmt"
+	"io"
+	"os"
+	"sync/atomic"
+)
 
 // TLogLevel s.e.
 type TLogLevel int32
@@ -69,4 +74,16 @@ func IsVerbose() bool {
 
 func IsTrace() bool {
 	return isEnabled(LogLevelTrace)
+}
+
+var PrintLine func(level TLogLevel, line string) = DefaultPrintLine
+
+func DefaultPrintLine(level TLogLevel, line string) {
+	var w io.Writer
+	if level == LogLevelError {
+		w = os.Stderr
+	} else {
+		w = os.Stdout
+	}
+	fmt.Fprintln(w, line)
 }

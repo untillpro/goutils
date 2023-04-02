@@ -10,8 +10,6 @@ package logger
 
 import (
 	"fmt"
-	"io"
-	"os"
 	"runtime"
 	"strings"
 	"sync/atomic"
@@ -20,7 +18,6 @@ import (
 
 const (
 	globalSkipStackFramesCount = 4
-	normalLineLength           = 60
 )
 
 const (
@@ -65,9 +62,6 @@ func (p *logPrinter) getFormattedMsg(msgType string, funcName string, line int, 
 		for _, arg := range args {
 			s = s + fmt.Sprint(" ", arg)
 		}
-		for i := len(s); i < normalLineLength; i++ {
-			s = s + " "
-		}
 		out += fmt.Sprint(s)
 	}
 	return out
@@ -77,13 +71,7 @@ func (p *logPrinter) print(skipStackFrames int, level TLogLevel, msgType string,
 	funcName, line := p.getFuncName(skipStackFrames + globalSkipStackFramesCount)
 	out := p.getFormattedMsg(msgType, funcName, line, args...)
 
-	var w io.Writer
-	if level == LogLevelError {
-		w = os.Stderr
-	} else {
-		w = os.Stdout
-	}
-	fmt.Fprintln(w, out)
+	PrintLine(level, out)
 }
 
 func getLevelPrefix(level TLogLevel) string {

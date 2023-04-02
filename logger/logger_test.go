@@ -75,10 +75,41 @@ func Test_BasicUsage_SkipStackFrames(t *testing.T) {
 	logger.SetLogLevel(logger.LogLevelTrace)
 
 	// [logger_test.loggerHelperWithSkipStackFrames:...]: myStunningPrefix: hello
-	loggerHelperWithSkipStackFrames(0, "hello")
+	_ = loggerHelperWithSkipStackFrames(0, "hello")
 
 	// logger_test.Test_SkipStackFrames:...]: myStunningPrefix: hello
-	loggerHelperWithSkipStackFrames(1, "hello")
+	_ = loggerHelperWithSkipStackFrames(1, "hello")
+}
+
+func Test_BasicUsage_DefaultPrintLine(t *testing.T) {
+
+	require := require.New(t)
+
+
+	// Define myPrintLine
+	myPrintLine := func(level logger.TLogLevel, line string) {
+		line = line + "myPrintLine"
+		logger.DefaultPrintLine(level, line)
+	}
+
+	// User myPrintLine as logger.PrintLine
+	
+	logger.PrintLine = myPrintLine
+	defer func() {
+		logger.PrintLine = logger.DefaultPrintLine
+	}()
+
+	{
+		logger.SetLogLevel(logger.LogLevelTrace)
+		strStdout, strStderr, err := testingu.CaptureStdoutStderr(func() error {
+			logger.Trace("hello")
+			return nil
+		})
+		require.NoError(err)
+		require.Equal(strStderr, "")
+		require.Contains(strStdout, "myPrintLine")
+	}
+
 }
 
 func Test_SkipStackFrames(t *testing.T) {
@@ -91,8 +122,7 @@ func Test_SkipStackFrames(t *testing.T) {
 	{
 		// [logger_test.loggerHelperSkip0StackFrames:69]: myStunningPrefix: hello
 		strStdout, strStderr, err := testingu.CaptureStdoutStderr(func() error {
-			loggerHelperWithSkipStackFrames(0, "hello")
-			return nil
+			return loggerHelperWithSkipStackFrames(0, "hello")
 		})
 		require.NoError(err)
 		require.Equal(strStderr, "")
@@ -102,8 +132,7 @@ func Test_SkipStackFrames(t *testing.T) {
 	{
 		// logger_test.Test_SkipStackFrames:80]: myStunningPrefix: hello
 		strStdout, strStderr, err := testingu.CaptureStdoutStderr(func() error {
-			loggerHelperWithSkipStackFrames(1, "hello")
-			return nil
+			return loggerHelperWithSkipStackFrames(1, "hello")
 		})
 		require.NoError(err)
 		require.Equal(strStderr, "")
