@@ -28,23 +28,27 @@ func SetLogLevel(logLevel TLogLevel) {
 }
 
 func Error(args ...interface{}) {
-	printIfLevel(LogLevelError, args...)
+	printIfLevel(0, LogLevelError, args...)
 }
 
 func Warning(args ...interface{}) {
-	printIfLevel(LogLevelWarning, args...)
+	printIfLevel(0, LogLevelWarning, args...)
 }
 
 func Info(args ...interface{}) {
-	printIfLevel(LogLevelInfo, args...)
+	printIfLevel(0, LogLevelInfo, args...)
 }
 
 func Verbose(args ...interface{}) {
-	printIfLevel(LogLevelVerbose, args...)
+	printIfLevel(0, LogLevelVerbose, args...)
 }
 
 func Trace(args ...interface{}) {
-	printIfLevel(LogLevelTrace, args...)
+	printIfLevel(0, LogLevelTrace, args...)
+}
+
+func Log(skipStackFrames int, level TLogLevel, args ...interface{}) {
+	printIfLevel(skipStackFrames, level, args...)
 }
 
 func IsError() bool {
