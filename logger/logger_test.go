@@ -81,7 +81,7 @@ func Test_BasicUsage_SkipStackFrames(t *testing.T) {
 	_ = loggerHelperWithSkipStackFrames(1, "hello")
 }
 
-func Test_BasicUsage_DefaultPrintLine(t *testing.T) {
+func Test_BasicUsage_CustomPrintLine(t *testing.T) {
 
 	require := require.New(t)
 
@@ -92,7 +92,7 @@ func Test_BasicUsage_DefaultPrintLine(t *testing.T) {
 		logger.DefaultPrintLine(level, line)
 	}
 
-	// User myPrintLine as logger.PrintLine
+	// Use myPrintLine as logger.PrintLine
 	
 	logger.PrintLine = myPrintLine
 	defer func() {
