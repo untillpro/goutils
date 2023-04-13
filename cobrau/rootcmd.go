@@ -6,6 +6,8 @@
 package cobrau
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 	"github.com/untillpro/goutils/logger"
 )
@@ -19,11 +21,11 @@ Persistent flags:
 
 */
 
-func PrepareRootCmd(use string, short string, args []string, cmds ...*cobra.Command) *cobra.Command {
+func PrepareRootCmd(use string, short string, args []string, version string, cmds ...*cobra.Command) *cobra.Command {
 
 	var rootCmd = &cobra.Command{
 		Use:   use,
-		Short: "Cluster management utility written in golang",
+		Short: short,
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			if ok, _ := cmd.Flags().GetBool("trace"); ok {
 				logger.SetLogLevel(logger.LogLevelTrace)
@@ -35,7 +37,17 @@ func PrepareRootCmd(use string, short string, args []string, cmds ...*cobra.Comm
 		},
 	}
 
+	var versionCmd = &cobra.Command{
+		Use:     "version",
+		Short:   "Print current version",
+		Aliases: []string{"ver"},
+		Run: func(cmd *cobra.Command, args []string) {
+			fmt.Println(version)
+		},
+	}
+
 	rootCmd.SetArgs(args[1:])
+	rootCmd.AddCommand(versionCmd)
 	rootCmd.AddCommand(cmds...)
 	rootCmd.PersistentFlags().BoolP("verbose", "v", false, "Verbose output")
 	rootCmd.PersistentFlags().Bool("trace", false, "Extremely verbose output")
