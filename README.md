@@ -1,2 +1,4 @@
 # goutils
 Golang utilities
+
+inv
