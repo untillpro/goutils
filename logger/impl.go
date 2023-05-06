@@ -10,8 +10,6 @@ package logger
 
 import (
 	"fmt"
-	"io"
-	"os"
 	"runtime"
 	"strings"
 	"sync/atomic"
@@ -19,8 +17,7 @@ import (
 )
 
 const (
-	skipStackFramesCount = 4
-	normalLineLength     = 60
+	globalSkipStackFramesCount = 4
 )
 
 const (
@@ -65,25 +62,16 @@ func (p *logPrinter) getFormattedMsg(msgType string, funcName string, line int, 
 		for _, arg := range args {
 			s = s + fmt.Sprint(" ", arg)
 		}
-		for i := len(s); i < normalLineLength; i++ {
-			s = s + " "
-		}
 		out += fmt.Sprint(s)
 	}
 	return out
 }
 
-func (p *logPrinter) print(level TLogLevel, msgType string, args ...interface{}) {
-	funcName, line := p.getFuncName(skipStackFramesCount)
+func (p *logPrinter) print(skipStackFrames int, level TLogLevel, msgType string, args ...interface{}) {
+	funcName, line := p.getFuncName(skipStackFrames + globalSkipStackFramesCount)
 	out := p.getFormattedMsg(msgType, funcName, line, args...)
 
-	var w io.Writer
-	if level == LogLevelError {
-		w = os.Stderr
-	} else {
-		w = os.Stdout
-	}
-	fmt.Fprintln(w, out)
+	PrintLine(level, out)
 }
 
 func getLevelPrefix(level TLogLevel) string {
@@ -102,8 +90,8 @@ func getLevelPrefix(level TLogLevel) string {
 	return ""
 }
 
-func printIfLevel(level TLogLevel, args ...interface{}) {
+func printIfLevel(skipStackFrames int, level TLogLevel, args ...interface{}) {
 	if isEnabled(level) {
-		globalLogPrinter.print(level, getLevelPrefix(level), args...)
+		globalLogPrinter.print(skipStackFrames, level, getLevelPrefix(level), args...)
 	}
 }

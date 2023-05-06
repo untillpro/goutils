@@ -8,7 +8,12 @@
 
 package logger
 
-import "sync/atomic"
+import (
+	"fmt"
+	"io"
+	"os"
+	"sync/atomic"
+)
 
 // TLogLevel s.e.
 type TLogLevel int32
@@ -28,23 +33,27 @@ func SetLogLevel(logLevel TLogLevel) {
 }
 
 func Error(args ...interface{}) {
-	printIfLevel(LogLevelError, args...)
+	printIfLevel(0, LogLevelError, args...)
 }
 
 func Warning(args ...interface{}) {
-	printIfLevel(LogLevelWarning, args...)
+	printIfLevel(0, LogLevelWarning, args...)
 }
 
 func Info(args ...interface{}) {
-	printIfLevel(LogLevelInfo, args...)
+	printIfLevel(0, LogLevelInfo, args...)
 }
 
 func Verbose(args ...interface{}) {
-	printIfLevel(LogLevelVerbose, args...)
+	printIfLevel(0, LogLevelVerbose, args...)
 }
 
 func Trace(args ...interface{}) {
-	printIfLevel(LogLevelTrace, args...)
+	printIfLevel(0, LogLevelTrace, args...)
+}
+
+func Log(skipStackFrames int, level TLogLevel, args ...interface{}) {
+	printIfLevel(skipStackFrames, level, args...)
 }
 
 func IsError() bool {
@@ -65,4 +74,16 @@ func IsVerbose() bool {
 
 func IsTrace() bool {
 	return isEnabled(LogLevelTrace)
+}
+
+var PrintLine func(level TLogLevel, line string) = DefaultPrintLine
+
+func DefaultPrintLine(level TLogLevel, line string) {
+	var w io.Writer
+	if level == LogLevelError {
+		w = os.Stderr
+	} else {
+		w = os.Stdout
+	}
+	fmt.Fprintln(w, line)
 }

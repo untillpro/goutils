@@ -65,6 +65,82 @@ func Test_BasicUsage(t *testing.T) {
 	}
 }
 
+func loggerHelperWithSkipStackFrames(skipStackFrames int, msg string) error {
+	logger.Log(skipStackFrames, logger.LogLevelTrace, "myStunningPrefix:", msg)
+	return nil
+}
+
+func Test_BasicUsage_SkipStackFrames(t *testing.T) {
+
+	logger.SetLogLevel(logger.LogLevelTrace)
+
+	// [logger_test.loggerHelperWithSkipStackFrames:...]: myStunningPrefix: hello
+	_ = loggerHelperWithSkipStackFrames(0, "hello")
+
+	// logger_test.Test_SkipStackFrames:...]: myStunningPrefix: hello
+	_ = loggerHelperWithSkipStackFrames(1, "hello")
+}
+
+func Test_BasicUsage_CustomPrintLine(t *testing.T) {
+
+	require := require.New(t)
+
+
+	// Define myPrintLine
+	myPrintLine := func(level logger.TLogLevel, line string) {
+		line = line + "myPrintLine"
+		logger.DefaultPrintLine(level, line)
+	}
+
+	// Use myPrintLine as logger.PrintLine
+	
+	logger.PrintLine = myPrintLine
+	defer func() {
+		logger.PrintLine = logger.DefaultPrintLine
+	}()
+
+	{
+		logger.SetLogLevel(logger.LogLevelTrace)
+		strStdout, strStderr, err := testingu.CaptureStdoutStderr(func() error {
+			logger.Trace("hello")
+			return nil
+		})
+		require.NoError(err)
+		require.Equal(strStderr, "")
+		require.Contains(strStdout, "myPrintLine")
+	}
+
+}
+
+func Test_SkipStackFrames(t *testing.T) {
+
+	require := require.New(t)
+	logger.SetLogLevel(logger.LogLevelTrace)
+
+	const funcNamePattern = "loggerHelperWithSkipStackFrames"
+
+	{
+		// [logger_test.loggerHelperSkip0StackFrames:69]: myStunningPrefix: hello
+		strStdout, strStderr, err := testingu.CaptureStdoutStderr(func() error {
+			return loggerHelperWithSkipStackFrames(0, "hello")
+		})
+		require.NoError(err)
+		require.Equal(strStderr, "")
+		require.Contains(strStdout, funcNamePattern)
+	}
+
+	{
+		// logger_test.Test_SkipStackFrames:80]: myStunningPrefix: hello
+		strStdout, strStderr, err := testingu.CaptureStdoutStderr(func() error {
+			return loggerHelperWithSkipStackFrames(1, "hello")
+		})
+		require.NoError(err)
+		require.Equal(strStderr, "")
+		require.NotContains(strStdout, funcNamePattern)
+	}
+
+}
+
 func Test_StdoutStderr_LogLevel(t *testing.T) {
 
 	require := require.New(t)
@@ -81,7 +157,7 @@ func Test_StdoutStderr_LogLevel(t *testing.T) {
 		require.Contains(strStderr, "Error arg1 arg2")
 		require.Equal(strStdout, "")
 	}
-	
+
 	// LogLevelWarning
 	{
 		logger.SetLogLevel(logger.LogLevelWarning)
