@@ -6,6 +6,7 @@
 package iterate
 
 import (
+	"errors"
 	"fmt"
 	"testing"
 
@@ -434,5 +435,37 @@ func Test_FindFirstMapError(t *testing.T) {
 		require.NoError(err)
 		require.Empty(key)
 		require.Empty(value)
+	})
+}
+
+func TestForEachError(t *testing.T) {
+	require := require.New(t)
+	t.Run("no error", func(t *testing.T) {
+		err := ForEachError(func(enum func(str string)) {
+			enum("1")
+		}, func(s string) error {
+			require.Equal("1", s)
+			return nil
+		})
+		require.NoError(err)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		testErr := errors.New("test error")
+		expected := ""
+		err := ForEachError(func(enum func(str string)) {
+			enum("1")
+			enum("2")
+			enum("3")
+			enum("4")
+		}, func(s string) error {
+			if s == "3" {
+				return testErr
+			}
+			expected += s
+			return nil
+		})
+		require.ErrorIs(err, testErr)
+		require.Equal("12", expected)
 	})
 }

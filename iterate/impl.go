@@ -10,6 +10,16 @@ func ForEach[T any](forEach ForEachFunction[T], enum func(T)) {
 	forEach(enum)
 }
 
+func ForEachError[T any](forEach ForEachFunction[T], do func(T) error) (err error) {
+	forEach(func(d T) {
+		if err != nil {
+			return
+		}
+		err = do(d)
+	})
+	return err
+}
+
 // Slice is a function type wrapper for naked slices.
 // Slice result can be passed as a first argument to `ForEach`, `FindFirst` and `FindFirstError` routines
 func Slice[T any](slice []T) ForEachFunction[T] {
