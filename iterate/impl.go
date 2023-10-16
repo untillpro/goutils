@@ -10,6 +10,17 @@ func ForEach[T any](forEach ForEachFunction[T], enum func(T)) {
 	forEach(enum)
 }
 
+// Same as ForEachError but with an one addition arg
+func ForEachError1Arg[T any, A1 any](forEach ForEachFunction1Arg[T, A1], arg1 A1, do func(T) error) (err error) {
+	forEach(arg1, func(d T) {
+		if err != nil {
+			return
+		}
+		err = do(d)
+	})
+	return err
+}
+
 func ForEachError[T any](forEach ForEachFunction[T], do func(T) error) (err error) {
 	forEach(func(d T) {
 		if err != nil {
