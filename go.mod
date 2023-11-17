@@ -1,6 +1,6 @@
 module github.com/untillpro/goutils
 
-go 1.20
+go 1.21.4
 
 require (
 	github.com/spf13/cobra v1.7.0
