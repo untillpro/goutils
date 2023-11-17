@@ -506,3 +506,38 @@ func TestForEachError1Arg(t *testing.T) {
 		require.Equal("12", expected)
 	})
 }
+
+func TestForEachError2Values(t *testing.T) {
+	require := require.New(t)
+
+	t.Run("no error", func(t *testing.T) {
+		err := ForEachError2Values(func(enum func(v1 string, v2 int)) {
+			enum("str1", 42)
+		}, func(s string, i int) error {
+			require.Equal("str1", s)
+			require.Equal(42, i)
+			return nil
+		})
+		require.NoError(err)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		testErr := errors.New("test error")
+		expectedSum := 0
+		err := ForEachError2Values(func(enum func(v1 string, v2 int)) {
+			enum("str1", 1)
+			enum("str2", 2)
+			enum("str3", 3)
+			enum("str4", 4)
+		}, func(s string, i int) error {
+			if i == 3 {
+				return testErr
+			}
+			require.Equal(fmt.Sprintf("str%d", i), s)
+			expectedSum += i
+			return nil
+		})
+		require.ErrorIs(err, testErr)
+		require.Equal(3, expectedSum)
+	})
+}
