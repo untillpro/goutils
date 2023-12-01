@@ -11,6 +11,7 @@ package exec_test
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/untillpro/goutils/exec"
 )
@@ -26,9 +27,8 @@ func ExamplePipedExec_RunToStrings() {
 		fmt.Println("exec.PipedExec failed:", err, stderr)
 	}
 
-	fmt.Println(stdout)
-	// Output:
-	// RunToStrings
+	fmt.Println(strings.TrimSpace(stdout))
+	// Output: RunToStrings
 }
 
 // printf "1\n2\n3" | grep 2
@@ -43,9 +43,8 @@ func ExamplePipedExec_RunToStrings_pipe() {
 		fmt.Println("exec.PipedExec failed:", err, stderr)
 	}
 
-	fmt.Println(stdout)
-	// Output:
-	// 2
+	fmt.Println(strings.TrimSpace(stdout))
+	// Output: 2
 }
 
 // Run a command and use os.Stdout, os.Stderr
@@ -59,6 +58,5 @@ func ExamplePipedExec_Run() {
 		fmt.Println("exec.PipedExec failed:", err)
 	}
 
-	// Output:
-	// Run
+	// Output: Run
 }
