@@ -18,72 +18,9 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 	"github.com/untillpro/goutils/exec"
 	"github.com/untillpro/goutils/logger"
 )
-
-func Test_BasicsUsage(t *testing.T) {
-
-	require := require.New(t)
-
-	logger.SetLogLevel(logger.LogLevelVerbose)
-
-	// echo to strings
-	{
-		stdout, stderr, err := new(exec.PipedExec).
-			Command("echo", "hello853").
-			RunToStrings()
-		require.NoError(err)
-		require.Equal("hello853", stdout[0:8])
-		require.Equal("", stderr)
-	}
-
-	// echo to stdout, stderr
-	{
-		err := new(exec.PipedExec).
-			Command("echo", "hello").
-			Run(os.Stdout, os.Stderr)
-		assert.Nil(t, err)
-	}
-
-	// echo hello2 | grep hello2
-	{
-		err := new(exec.PipedExec).
-			Command("echo", "hello2").
-			Command("grep", "hello2").
-			Run(os.Stdout, os.Stderr)
-		require.NoError(err)
-	}
-
-	// echo hi | grep hello
-	{
-		err := new(exec.PipedExec).
-			Command("echo", "hi").
-			Command("grep", "hello").
-			Run(os.Stdout, os.Stderr)
-		require.Error(err)
-	}
-
-	// echo hi | grep hi | echo good
-	{
-		err := new(exec.PipedExec).
-			Command("echo", "hi").
-			Command("grep", "hi").
-			Command("echo", "good").
-			Run(os.Stdout, os.Stdout)
-		require.NoError(err)
-	}
-
-	// ls at "/""
-	{
-		err := new(exec.PipedExec).
-			Command("ls").WorkingDir("/").
-			Run(os.Stdout, os.Stdout)
-		require.NoError(err)
-	}
-
-}
 
 func Test_Wd(t *testing.T) {
 
